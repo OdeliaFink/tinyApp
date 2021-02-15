@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/OdeliaFink/tinyApp/issues"
   },
-  "homepage": "https://github.com/OdeliaFink/tinyApp#readme"
+  "homepage": "https://github.com/OdeliaFink/tinyApp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
