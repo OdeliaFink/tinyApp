@@ -1,7 +1,7 @@
+const express = require("express");
 const PORT = 8080;
 const app = express();
 app.set("view engine", "ejs");
-const express = require("express");
 
 
 const urlDatabase = {
@@ -19,6 +19,11 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
 });
 
 
