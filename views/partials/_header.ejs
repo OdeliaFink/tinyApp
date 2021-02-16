@@ -14,10 +14,10 @@
     <form action="/logout" method="POST">
       <label>Logged in as: <%= username %></label>
       <button type="submit">Logout</button>
-    </form>}
+    </form>
   <% } else { %>
     <form action="/login" method="POST">
-      <input type="text" name="Username" value = "<%= username %>" placeholder="Username">
+      <input type="text" name="username" value="<%= username %>" placeholder="username">
       <button type="submit">Login</button>
     </form>
   <% } %>

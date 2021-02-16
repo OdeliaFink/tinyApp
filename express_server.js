@@ -59,8 +59,9 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
+  let username = req.cookies.username
 
-  const templateVars = { shortURL: req.params.shortURL, longURL};
+  const templateVars = { shortURL: req.params.shortURL, longURL: longURL, username: username };
   res.render("urls_show", templateVars);
 });
 
@@ -78,7 +79,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect("/urls");
-})
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie('username')
+  res.redirect("/urls");
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
