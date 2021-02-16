@@ -3,12 +3,11 @@ const PORT = 8080;
 const app = express();
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
-const { url } = require("inspector");
 app.use(bodyParser.urlencoded({extended: true}));
 
-function generateRandomString() {
+const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
-}
+};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -36,28 +35,28 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL; //prints out full site name
-  urlDatabase[shortURL] = longURL
-  res.redirect(`/urls/${shortURL}`)
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
 
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new")
-})
+  res.render("urls_new");
+});
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL]
+  const longURL = urlDatabase[shortURL];
 
-  const templateVars = { shortURL: req.params.shortURL, longURL}
+  const templateVars = { shortURL: req.params.shortURL, longURL};
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL 
+  const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  res.redirect(longURL)
-})
+  res.redirect(longURL);
+});
 
 
 app.listen(PORT, () => {
