@@ -4,6 +4,7 @@ const app = express();
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+var cookieParser = require('cookie-parser');
 
 const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
@@ -41,15 +42,12 @@ app.post("/urls", (req, res) => {
 });
 
 //to update short url via post route
-
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-
   res.redirect("/urls")
-
-})
+});
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
