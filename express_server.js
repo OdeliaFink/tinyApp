@@ -51,8 +51,8 @@ app.get("/hello", (req, res) => {
 
 //GET route to main urls page
 app.get("/urls", (req, res) => {
-  let username = req.cookies.username;
-  const templateVars = { urls: urlDatabase, username: username };
+  const user_id = req.cookies.user_id;
+  const templateVars = { urls: urlDatabase, user: users[user_id] };
   res.render("urls_index", templateVars);
 });
 
@@ -74,17 +74,17 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 //Add new URL to database
 app.get("/urls/new", (req, res) => {
-  let username = req.cookies.username;
-  const templateVars = { urls: urlDatabase, username: username };
+  const user_id = req.cookies.user_id;
+  const templateVars = { urls: urlDatabase, user: users[user_id] };
   res.render("urls_new",templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  let username = req.cookies.username;
+  const user_id = req.cookies.user_id;
 
-  const templateVars = { shortURL: req.params.shortURL, longURL: longURL, username: username };
+  const templateVars = { shortURL: req.params.shortURL, longURL: longURL, user: users[user_id] };
   res.render("urls_show", templateVars);
 });
 
@@ -100,18 +100,18 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  res.cookie('user_id', req.body.user_id);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("/urls");
 });
 
 app.get("/register", (req, res) => {
-  const username = req.cookies.username
-  const templateVars = { username: username };
+  const user_id = req.cookies.user_id;
+  const templateVars = { user: users[user_id] };
   res.render("register", templateVars)
 });
 
@@ -123,7 +123,7 @@ const password = req.body.password;
 
 const userObj = { id, email, password };
 users[id] = userObj;
-console.log(users[id])
+// console.log(users[id])
 res.cookie('user_id', id)
 res.redirect("/urls")
 })
