@@ -13,11 +13,6 @@ const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
 };
 
-// const findUser = function() {
-// const currentUser = username.find(userObj => userObj.email === email)
-// return currentUser
-// }
-
 //change name to get id by email
 const getIdByEmail = function(email, userDatabase) {
   for (let user in userDatabase) {
