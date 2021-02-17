@@ -12,10 +12,10 @@ const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
 };
 
-const findUser = function() {
-const currentUser = username.find(userObj => userObj.email === email)
-return currentUser
-}
+// const findUser = function() {
+// const currentUser = username.find(userObj => userObj.email === email)
+// return currentUser
+// }
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -115,9 +115,17 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars)
 });
 
+//endpoint to handle registration data
 app.post("/register", (req, res) => {
+const id = generateRandomString();
+const email = req.body.email;
+const password = req.body.password;
 
-  res.redirect("/urls")
+const userObj = { id, email, password };
+users[id] = userObj;
+console.log(users[id])
+res.cookie('user_id', id)
+res.redirect("/urls")
 })
 
 app.listen(PORT, () => {
