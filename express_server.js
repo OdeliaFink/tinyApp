@@ -17,6 +17,14 @@ const generateRandomString = function() {
 // return currentUser
 // }
 
+const getUserByEmail = function(email, userDatabase) {
+  for (let user in userDatabase) {
+    if (email === userDatabase[user].email) {
+      return userDatabase[user].id
+    }
+  }
+};
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -121,11 +129,18 @@ const id = generateRandomString();
 const email = req.body.email;
 const password = req.body.password;
 
-const userObj = { id, email, password };
-users[id] = userObj;
-// console.log(users[id])
-res.cookie('user_id', id)
-res.redirect("/urls")
+
+if(email === "" || password === "") {
+  res.status(400).send("Please fill out registration")
+}
+if(getUserByEmail(email, users)) {
+  res.status(400).send("Email already exists")
+} else {
+  const userObj = { id, email, password };
+  users[id] = userObj;
+  res.cookie('user_id', id)
+  res.redirect("/urls") 
+}
 })
 
 app.listen(PORT, () => {
