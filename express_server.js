@@ -24,6 +24,7 @@ const getIdByEmail = function(email, userDatabase) {
       return userDatabase[user].id
     }
   }
+  return false; 
 };
 
 let passwordMatching = function(password, userDatabase) {
@@ -119,12 +120,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  if(!getIdByEmail(req.body.email, users)) {
-    res.status()
-  } else {
-  res.cookie('user_id', req.body.user_id);
+  console.log(req.body.email);
+  if(getIdByEmail(req.body.email, users)) {
+      res.cookie('user_id', getIdByEmail(req.body.email, users))
+      }
   res.redirect("/urls");
-  }
 });
 
 app.get("/login", (req, res) => {
