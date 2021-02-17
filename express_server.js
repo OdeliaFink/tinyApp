@@ -17,13 +17,15 @@ const generateRandomString = function() {
 // return currentUser
 // }
 
-const getUserByEmail = function(email, userDatabase) {
+//change name to get id by email
+const getIdByEmail = function(email, userDatabase) {
   for (let user in userDatabase) {
     if (email === userDatabase[user].email) {
       return userDatabase[user].id
     }
   }
 };
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -108,9 +110,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('user_id', req.body.user_id);
+  if(getIdByEmail(req.body.email, users)) {
+    res.cookie('user_id', req.body.user_id);
+  }
   res.redirect("/urls");
 });
+
+app.get("/login", (req, res) => {
+  const user_id = req.cookies.user_id;
+  const templateVars = { user: users[user_id] };
+  res.render("urls_login", templateVars)
+})
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
@@ -128,12 +138,10 @@ app.post("/register", (req, res) => {
 const id = generateRandomString();
 const email = req.body.email;
 const password = req.body.password;
-
-
 if(email === "" || password === "") {
   res.status(400).send("Please fill out registration")
 }
-if(getUserByEmail(email, users)) {
+if(getIdByEmail(email, users)) {
   res.status(400).send("Email already exists")
 } else {
   const userObj = { id, email, password };
