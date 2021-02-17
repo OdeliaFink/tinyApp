@@ -26,6 +26,15 @@ const getIdByEmail = function(email, userDatabase) {
   }
 };
 
+let passwordMatching = function(password, userDatabase) {
+  for(let user in userDatabase) {
+    if(password === userDatabase[user].password) {
+      return true
+    }
+    }
+    return false;
+  }
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -110,10 +119,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  if(getIdByEmail(req.body.email, users)) {
-    res.cookie('user_id', req.body.user_id);
-  }
+  if(!getIdByEmail(req.body.email, users)) {
+    res.status()
+  } else {
+  res.cookie('user_id', req.body.user_id);
   res.redirect("/urls");
+  }
 });
 
 app.get("/login", (req, res) => {
