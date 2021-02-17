@@ -53,7 +53,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let username = req.cookies.username
+  const templateVars = { urls: urlDatabase, username: username };
+  res.render("urls_new",templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
