@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 app.set("view engine", "ejs");
 app.use(cookieParser());
 const bodyParser = require("body-parser");
+const e = require("express");
 app.use(bodyParser.urlencoded({extended: true}));
 
 const generateRandomString = function() {
@@ -120,12 +121,19 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body.email);
-  if(getIdByEmail(req.body.email, users)) {
-      res.cookie('user_id', getIdByEmail(req.body.email, users))
-      }
-  res.redirect("/urls");
-});
+  const email = req.body.email;
+  const password = req.body.password;
+  if(getIdByEmail(email, users)) {
+    if(passwordMatching(password, users)) {
+      res.cookie('user_id', getIdByEmail(email, users))
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("Wrong Password.")
+    } 
+  } else {
+    res.status(403).send("Wrong Email.")
+  }
+  });
 
 app.get("/login", (req, res) => {
   const user_id = req.cookies.user_id;
