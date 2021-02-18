@@ -1,7 +1,6 @@
 const express = require("express");
-const PORT = 8080;
 const app = express();
-const cookieParser = require('cookie-parser');
+const PORT = 8080;
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -9,7 +8,6 @@ const cookieSession = require('cookie-session');
 const { generateRandomString, getUserByEmail, passwordMatching, urlsForUser, urlBelongToUser} = require('./helper');
 
 app.set("view engine", "ejs");
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
