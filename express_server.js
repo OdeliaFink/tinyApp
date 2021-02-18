@@ -14,7 +14,6 @@ const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
 };
 
-//change name to get id by email
 const getIdByEmail = function(email, userDatabase) {
   for (let user in userDatabase) {
     if (email === userDatabase[user].email) {
@@ -24,12 +23,13 @@ const getIdByEmail = function(email, userDatabase) {
   return false;
 };
 
-let passwordMatching = function(password, userDatabase) {
+let passwordMatching = function(password, user) {
     if (bcrypt.compareSync(password, user.password)) {
       return true;
     }
   return false;
 };
+
 
 //returns a seperate object with all of the short url's associated to a specific user
 const urlsForUser = function(id, urlDatabase) {
@@ -162,9 +162,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  if (getIdByEmail(email, users)) {
-    if (passwordMatching(password, users[getIdByEmail])) {
-      res.cookie('user_id', getIdByEmail(email, users));
+  let confirmedUser = getIdByEmail(req.body.email, users);
+  if (confirmedUser) {
+    if (passwordMatching(password, users[confirmedUser])) {
+      res.cookie('user_id', confirmedUser);
       res.redirect("/urls");
     } else {
       res.status(403).send("Wrong Password.");
