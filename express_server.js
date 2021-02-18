@@ -42,6 +42,12 @@ const usersUrls = function(id, urlDatabase) {
   return displayedUrls;
 }
 
+const urlBelongToUser = function(id, shortURL, urlDatabase) {
+  if (urlDatabase[shortURL].userId === id) {
+    return true;
+  }
+  return false;
+};
 
 
   const urlDatabase = {
@@ -97,12 +103,13 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   const longURL = req.body.longURL;
   let user_id = req.cookies.user_id;
 
-  if(usersUrls(user_id, shortURL, urlDatabase)) {
+  if(urlBelongToUser(user_id, shortURL, urlDatabase)) {
     urlDatabase[shortURL].longURL = longURL;
     res.redirect("/urls");
-  } else {
-    res.redirect("/login")
   }
+   else {
+    res.redirect("/login");
+   }  
 });
 
 //Add new URL to database
@@ -140,15 +147,14 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  const user_id = req.cookies.user_idl
-
-  if(!user_id) {
-    res.redirect("/login")
-  } else if (usersUrls(user_id, shortURL, urlDatabase)) {
+  let user_id = req.cookies.user_id;
+  if (!user_id) {
+    res.redirect("/login");
+  } else if (urlBelongToUser(user_id, shortURL, urlDatabase)) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
-    res.redirect("/login")
+    res.redirect("/login");
   }
 });
 
