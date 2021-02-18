@@ -32,11 +32,22 @@ let passwordMatching = function(password, userDatabase) {
     return false;
   }
 
+const usersUrls = function(id, urlDatabase) {
+  const displayedUrls = {};
+  for (let shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userId === id) {
+      displayedUrls[shortURL] = urlDatabase[shortURL]
+    }
+  }
+  return displayedUrls;
+}
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+
+
+  const urlDatabase = {
+    "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: "Jerry"},
+    "9sm5xK": {longURL:"http://www.google.com", userId: "Cosmo"}
+  };
 
 const users = { 
   "userRandomID": {
@@ -68,14 +79,14 @@ app.get("/hello", (req, res) => {
 //GET route to main urls page
 app.get("/urls", (req, res) => {
   const user_id = req.cookies.user_id;
-  const templateVars = { urls: urlDatabase, user: users[user_id] };
+  const templateVars = { urls: usersUrls(user_id, urlDatabase), user: users[user_id] };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(); //prints random short url 
   const longURL = req.body.longURL; //prints out full site name
-  urlDatabase[shortURL] = longURL; // url databse alone is short and long but urldb[shorturl] accesses long domain
+  urlDatabase[shortURL] = {longURL, userId: req.cookies.user_id}; // url databse alone is short and long but urldb[shorturl] accesses long domain
   res.redirect(`/urls/${shortURL}`);
 
 });
@@ -83,43 +94,69 @@ app.post("/urls", (req, res) => {
 //to updated url via post route
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL; //updated/edited short url
-  const longURL = req.body.longURL; // updated/edited long form url
-  urlDatabase[shortURL] = longURL;
-  res.redirect("/urls");
+  const longURL = req.body.longURL;
+  let user_id = req.cookies.user_id;
+
+  if(usersUrls(user_id, shortURL, urlDatabase)) {
+    urlDatabase[shortURL].longURL = longURL;
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login")
+  }
 });
 
 //Add new URL to database
 app.get("/urls/new", (req, res) => {
   const user_id = req.cookies.user_id;
-  const templateVars = { urls: urlDatabase, user: users[user_id] };
-  res.render("urls_new",templateVars);
+  if(!user_id) {
+    res.redirect("/login")
+  } else {
+    const templateVars = { urls: urlDatabase, user: users[user_id] };
+    res.render("urls_new",templateVars);
+  }
+
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   const user_id = req.cookies.user_id;
 
-  const templateVars = { shortURL: req.params.shortURL, longURL: longURL, user: users[user_id] };
-  res.render("urls_show", templateVars);
+  if(!user_id) {
+    res.redirect("/login")
+  } else if (usersUrls(user_id, shortURL, urlDatabase)) {
+    const templateVars = { shortURL, longURL, user: users[user_id] };
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(401).send("Not Authorized to View This Page.")
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  const shortURL = req.params.shortURL;
+  const user_id = req.cookies.user_idl
+
+  if(!user_id) {
+    res.redirect("/login")
+  } else if (usersUrls(user_id, shortURL, urlDatabase)) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login")
+  }
 });
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   if(getIdByEmail(email, users)) {
-    if(passwordMatching(password, users)) {
+    if(passwordMatching(password, users[getIdByEmail])) {
       res.cookie('user_id', getIdByEmail(email, users))
       res.redirect("/urls");
     } else {
