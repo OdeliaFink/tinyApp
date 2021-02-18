@@ -2,7 +2,7 @@ const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
 };
 
-const getIdByEmail = function(email, userDatabase) {
+const getUserByEmail = function(email, userDatabase) {
   for (let user in userDatabase) {
     if (email === userDatabase[user].email) {
       return userDatabase[user].id;
@@ -39,4 +39,4 @@ const urlBelongToUser = function(id, shortURL, urlDatabase) {
   return false;
 };
 
-module.exports = { generateRandomString, getIdByEmail, passwordMatching, urlsForUser, urlBelongToUser}
+module.exports = { generateRandomString, getUserByEmail, passwordMatching, urlsForUser, urlBelongToUser}

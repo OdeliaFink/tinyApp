@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const cookieSession = require('cookie-session')
-const { generateRandomString, getIdByEmail, passwordMatching, urlsForUser, urlBelongToUser} = require('./helper')
+const { generateRandomString, getUserByEmail, passwordMatching, urlsForUser, urlBelongToUser} = require('./helper');
 
 app.set("view engine", "ejs");
 app.use(cookieParser());
@@ -118,7 +118,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  let confirmedUser = getIdByEmail(req.body.email, users);
+  let confirmedUser = getUserByEmail(req.body.email, users);
   if (confirmedUser) {
     if (passwordMatching(password, users[confirmedUser])) {
       req.session['user_id'] = confirmedUser;
@@ -156,7 +156,7 @@ app.post("/register", (req, res) => {
   if (email === "" || password === "") {
     res.status(400).send("Please fill out registration");
   }
-  if (getIdByEmail(email, users)) {
+  if (getUserByEmail(email, users)) {
     res.status(400).send("Email already exists");
   } else {
     const salt = bcrypt.genSaltSync(saltRounds);
