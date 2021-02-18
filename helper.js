@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 const generateRandomString = function() {
   return Math.random().toString(36).substr(2, 6);
 };
@@ -8,14 +10,13 @@ const getUserByEmail = function(email, userDatabase) {
       return userDatabase[user].id;
     }
   }
-  return false;
 };
 
 //comparing hashed passwords in syncronous function
 let passwordMatching = function(password, user) {
-    if (bcrypt.compareSync(password, user.password)) {
-      return true;
-    }
+  if (bcrypt.compareSync(password, user.password)) {
+    return true;
+  }
   return false;
 };
 
@@ -39,4 +40,4 @@ const urlBelongToUser = function(id, shortURL, urlDatabase) {
   return false;
 };
 
-module.exports = { generateRandomString, getUserByEmail, passwordMatching, urlsForUser, urlBelongToUser}
+module.exports = { generateRandomString, getUserByEmail, passwordMatching, urlsForUser, urlBelongToUser};
