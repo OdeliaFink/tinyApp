@@ -29,8 +29,8 @@
             <td><form action="/urls/<%=url%>"> <button class="btn btn-outline-primary"> Edit </button></form></td>
             <td><form  method="POST" action="/urls/<%=url%>/delete"> <button class="btn btn-outline-danger"> Delete </button></form></td>
           </tr>
-        <% } %>
-        <% } else { %>
+          <% } %>
+    <% } else { %>
           <h3>Please <a href="/login">login</a> or <a href="/register">register</a> to view</h3>
           <% } %>
       </tbody>
