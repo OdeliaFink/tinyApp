@@ -76,18 +76,14 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  const templateVars = { greeting: 'Hello Word!'};
-  res.render("hello_world", templateVars);
-});
-
 //GET request for the homepage
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const currentUser = users[req.session["user_id"]];
+  if (currentUser) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //endpoint to handle registration data
@@ -95,24 +91,28 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  if (email === "" || password === "") {
-    res.status(400).send("Please fill out registration");
+  if (!email || !password) {
+    console.log('Please make sure to provide all required information.');
+    res.status(400).redirect("/register");
+    return;
   }
   if (getUserByEmail(email, users)) {
-    res.status(400).send("Email already exists");
+    console.log('User with the given email already exists in the db.');
+    res.status(400).redirect("/register");
+    return;
   } else {
     const salt = bcrypt.genSaltSync(saltRounds);
     const userObj = { id, email, password: bcrypt.hashSync(password, salt)};
     users[id] = userObj;
     req.session['user_id'] = id;
-    res.redirect("/urls");
+    res.redirect("/");
   }
 });
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  let confirmedUser = getUserByEmail(email, users);
+  const confirmedUser = getUserByEmail(email, users);
   if (confirmedUser) {
     if (passwordMatching(password, users[confirmedUser])) {
       req.session['user_id'] = confirmedUser;
@@ -142,7 +142,7 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL; //updated/edited short url
   const longURL = req.body.longURL;
-  let user_id = req.session.user_id;
+  const user_id = req.session.user_id;
 
   if (urlBelongToUser(user_id, shortURL, urlDatabase)) {
     urlDatabase[shortURL].longURL = longURL;
@@ -154,7 +154,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  let user_id = req.session.user_id;
+  const user_id = req.session.user_id;
   if (!user_id) {
     res.redirect("/login");
   } else if (urlBelongToUser(user_id, shortURL, urlDatabase)) {
